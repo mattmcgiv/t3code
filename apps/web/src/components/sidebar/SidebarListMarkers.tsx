@@ -1,6 +1,7 @@
 import { CollapsibleSectionHeader } from "../ui/collapsible-section-header";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { ActivityIcon, PinIcon } from "lucide-react";
 import { type ReactNode, useLayoutEffect } from "react";
 import { cn } from "~/lib/utils";
 import {
@@ -79,22 +80,27 @@ export function SidebarDragBoundary(props: {
   marker: "pinned-header" | "pinned-divider";
   label: string;
   visible: boolean;
+  persistent?: boolean;
   isDropTarget: boolean;
 }) {
   return (
     <SortableSidebarMarker
       marker={props.marker}
       data-testid={`sidebar-${props.marker}`}
-      className="pointer-events-none relative mx-0.5 -mb-px h-0"
+      className={cn("pointer-events-none relative mx-0.5", props.persistent ? "h-6" : "-mb-px h-0")}
     >
-      {props.visible ? (
-        <div className="sidebar-drag-boundary-label absolute inset-x-2 top-1 flex h-4 items-center gap-2">
+      {props.visible || props.persistent ? (
+        <div
+          className="sidebar-drag-boundary-label absolute inset-x-2 top-1 flex h-4 items-center gap-2"
+          style={props.persistent ? { animation: "none" } : undefined}
+        >
           <span
             className={cn(
-              "shrink-0 text-xs font-medium",
+              "inline-flex shrink-0 items-center gap-1.5 text-xs font-medium",
               props.isDropTarget ? "text-primary" : "text-sidebar-foreground/80",
             )}
           >
+            {props.marker === "pinned-header" ? <PinIcon aria-hidden className="size-3" /> : null}
             {props.label}
           </span>
           <span
@@ -138,9 +144,30 @@ export function SidebarSectionHeader(props: {
         expanded={props.toggle.expanded}
         tone={props.isDropTarget ? "accent" : props.dragging ? "emphasized" : "muted"}
         data-testid={`sidebar-${shelf}-shelf-toggle`}
-        accessory={<span className="font-normal tabular-nums">{props.count}</span>}
+        accessory={
+          <span
+            className={cn(
+              "font-normal tabular-nums",
+              shelf === "working" && !props.isDropTarget && "text-info-foreground",
+            )}
+          >
+            {props.count}
+          </span>
+        }
       >
-        {props.label}
+        {shelf === "working" ? (
+          <span
+            className={cn(
+              "inline-flex items-center gap-1.5",
+              !props.isDropTarget && "text-info-foreground",
+            )}
+          >
+            <ActivityIcon aria-hidden className="size-3" />
+            {props.label}
+          </span>
+        ) : (
+          props.label
+        )}
       </CollapsibleSectionHeader>
     </SortableSidebarMarker>
   );

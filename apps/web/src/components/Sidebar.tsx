@@ -3527,6 +3527,7 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
                                 marker="pinned-header"
                                 label="Pinned"
                                 visible={from !== null}
+                                persistent={pinnedThreads.length > 0}
                                 isDropTarget={dragTargetSection === "pinned"}
                               />,
                             );
@@ -3536,8 +3537,9 @@ export default function Sidebar({ routeReveal }: { routeReveal: SidebarRouteReve
                               <SidebarDragBoundary
                                 key="pinned-divider"
                                 marker="pinned-divider"
-                                label="Active"
+                                label={workingShelfEnabled ? "Idle" : "Active"}
                                 visible={from !== null}
+                                persistent={projectFolders === null && activeThreads.length > 0}
                                 isDropTarget={dragTargetSection === "active"}
                               />,
                             );
